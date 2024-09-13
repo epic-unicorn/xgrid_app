@@ -3,7 +3,7 @@ import "./App.css";
 import { Switch, Route } from "react-router-dom";
 import AuthComponent from "./AuthComponent";
 import Account from "./Account";
-import FreeComponent from "./FreeComponent";
+import HomeComponent from "./HomeComponent";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 function App() {
@@ -11,19 +11,19 @@ function App() {
     <Container>
       <Row>
         <Col className="text-center">
-          <h1>React Authentication Tutorial</h1>
+          <h1>XGRID</h1>
 
           <section id="navigation">
             <a href="/">Home</a>
-            <a href="/free">Free Component</a>
-            <a href="/auth">Auth Component</a>
+            <a href="/account">Account</a>
+            <a href="/auth">XGRID</a>
           </section>
         </Col>
       </Row>
 
       <Switch>
-        <Route exact path="/" component={Account} />
-        <Route exact path="/free" component={FreeComponent} />
+        <Route exact path="/" component={HomeComponent} />
+        <Route exact path="/account" component={Account} />
         <ProtectedRoutes path="/auth" component={AuthComponent} />
       </Switch>
     </Container>

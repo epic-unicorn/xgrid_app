@@ -11,10 +11,7 @@ function Login() {
   const cookies = new Cookies();
 
   const handleSubmit = (e) => {
-    // prevent the form from refreshing the whole page
     e.preventDefault();
-
-    // set configurations
     const configuration = {
       method: "post",
       url: "http://localhost:3000/login",
@@ -24,15 +21,12 @@ function Login() {
       },
     };
 
-    // make the API call
     axios(configuration)
       .then((result) => {
         setLogin(true);
-        // set the cookie
         cookies.set("TOKEN", result.data.token, {
           path: "/",
         });
-        // redirect user to the auth page
         window.location.href = "/auth";
       })
       .catch((error) => {
@@ -44,7 +38,7 @@ function Login() {
     <>
       <h2>Login</h2>
       <Form onSubmit={(e) => handleSubmit(e)}>
-        {/* email */}
+
         <Form.Group controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
@@ -56,7 +50,6 @@ function Login() {
           />
         </Form.Group>
 
-        {/* password */}
         <Form.Group controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
@@ -68,7 +61,6 @@ function Login() {
           />
         </Form.Group>
 
-        {/* submit button */}
         <Button
           variant="primary"
           type="submit"
@@ -77,7 +69,6 @@ function Login() {
           Login
         </Button>
 
-        {/* display success message */}
         {login ? (
           <p className="text-success">You Are Logged in Successfully</p>
         ) : (
