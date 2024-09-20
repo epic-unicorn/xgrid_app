@@ -6,7 +6,7 @@ function HomeComponent() {
   useEffect(() => {
     const configuration = {
       method: "get",
-      url: "http://localhost:3000/free-endpoint",
+      url: "http://localhost:3000/home-endpoint",
     };
     
     axios(configuration)
@@ -19,8 +19,7 @@ function HomeComponent() {
   }, []);
   return (
     <div>
-      <h1 className="text-center">Free Component</h1>
-      <h3 className="text-center text-danger">{message}</h3>
+      <h3 className="text-center text">{message}</h3>
     </div>
   );
 }

@@ -1,32 +1,28 @@
-import { Container, Col, Row } from "react-bootstrap";
 import "./App.css";
 import { Switch, Route } from "react-router-dom";
-import AuthComponent from "./AuthComponent";
-import Account from "./Account";
-import HomeComponent from "./HomeComponent";
+import AuthComponent from "./Components/AuthComponent";
+import Account from "./Components/Account";
+import HomeComponent from "./Components/HomeComponent";
 import ProtectedRoutes from "./ProtectedRoutes";
-
+import { Col } from "react-bootstrap";
+  
 function App() {
   return (
-    <Container>
-      <Row>
-        <Col className="text-center">
-          <h1>XGRID</h1>
-
-          <section id="navigation">
-            <a href="/">Home</a>
-            <a href="/account">Account</a>
-            <a href="/auth">XGRID</a>
-          </section>
-        </Col>
-      </Row>
+    <div className="App">
+      <div>
+        <div class="row mx-md-n5 bg-light">
+          <div class="col px-md-5"><div class="p-3"><a href="/">Home</a></div></div>
+          <div class="col px-md-5"><div class="p-3"><a href="/account">Login</a></div></div>
+          <div class="col px-md-5"><div class="p-3"><a href="/auth">Xgrid</a></div></div>
+        </div>
+      </div>
 
       <Switch>
         <Route exact path="/" component={HomeComponent} />
         <Route exact path="/account" component={Account} />
         <ProtectedRoutes path="/auth" component={AuthComponent} />
       </Switch>
-    </Container>
+    </div>
   );
 }
 

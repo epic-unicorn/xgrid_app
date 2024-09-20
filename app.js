@@ -110,11 +110,11 @@ app.post("/login", (request, response) => {
 });
 
 app.get("/home-endpoint", (request, response) => {
-  response.json({ message: "Hi!" });
+  response.json({ message: "Home!" });
 });
 
 app.get("/auth-endpoint", auth, (request, response) => {
-  response.json({ message: "You need an account first!" });
+  response.json({ message: "Secured!" });
 });
 
 
