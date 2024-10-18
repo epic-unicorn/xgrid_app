@@ -4,7 +4,6 @@ import AuthComponent from "./Components/AuthComponent";
 import Account from "./Components/Account";
 import HomeComponent from "./Components/HomeComponent";
 import ProtectedRoutes from "./ProtectedRoutes";
-import { Col } from "react-bootstrap";
   
 function App() {
   return (
@@ -17,11 +16,13 @@ function App() {
         </div>
       </div>
 
+      <div class="row mx-md-n5 mt-5">
       <Switch>
         <Route exact path="/" component={HomeComponent} />
         <Route exact path="/account" component={Account} />
         <ProtectedRoutes path="/auth" component={AuthComponent} />
       </Switch>
+      </div>
     </div>
   );
 }

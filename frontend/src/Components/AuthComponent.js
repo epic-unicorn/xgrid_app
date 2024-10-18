@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Container, Row, Col } from "react-bootstrap";
 import Cookies from "universal-cookie";
+import ReactPlayer from "react-player/lazy";
 
 function AuthComponent() {
   const cookies = new Cookies();
   const token = cookies.get("TOKEN");
-  const [message, setMessage] = useState("");
+  const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     const configuration = {
       method: "get",
-      url: "http://localhost:3000/auth-endpoint",
+      url: "http://localhost:3000/get-videos",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -19,7 +19,7 @@ function AuthComponent() {
 
     axios(configuration)
       .then((result) => {
-        setMessage(result.data.message);
+        setVideos(result.data);
       })
       .catch((error) => {
         error = new Error();
@@ -32,36 +32,21 @@ function AuthComponent() {
     window.location.href = "/";
   };
 
-  return (
-    <div class="container-fluid h-10">
-      <h3 className="text-center text-danger">{message}</h3>
-      <Button type="submit" variant="danger" onClick={() => logout()}>
-        Logout
-      </Button>
+  return (    
+    <>
+      <div class="container-fluid h-10">
+        <h2>Videos {videos.length}</h2>
 
-      <Button type="submit" variant="info">
-        Refresh videos
-      </Button>
+        <button type="button" class="btn btn-danger" onClick={() => logout()}>
+          Logout
+        </button>
 
-      <div>
-        <Row>
-          <Col>
-            <video id="t" width="100%" controls autoPlay muted />
-          </Col>
-          <Col>
-            <video id="t" width="100%" controls autoPlay muted />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <video id="t" width="100%" controls autoPlay muted />
-          </Col>
-          <Col>
-            <video id="t" width="100%" controls autoPlay muted />
-          </Col>
-        </Row>
+        <div>
+          <ReactPlayer playing controls muted />
+          <ReactPlayer playing controls muted />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

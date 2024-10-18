@@ -19,7 +19,7 @@ function HomeComponent() {
   }, []);
   return (
     <div>
-      <h3 className="text-center text">{message}</h3>
+      <h2 className="text-center text">{message}</h2>
     </div>
   );
 }

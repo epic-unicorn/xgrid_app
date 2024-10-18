@@ -14,7 +14,9 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.6.1"
+    "kyouka-api": "^1.3.5",
+    "mongoose": "^8.6.1",
+    "xvideosx": "^1.6.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

@@ -4,16 +4,13 @@ import Login from "../Login";
 import Register from "../Register";
 
 export default function Account() {
-  return (    
-    <Row className="justify-content-md-center">      
-      {/* 
-      <Col xs={12} sm={12} md={6} lg={6}>
-        <Register />
-      </Col>
-       */}
-      <Col xs={12} sm={12} md={6} lg={6}>
-        <Login />
-      </Col>
-    </Row>
+  return (
+    <div class="row mx-md-n5">
+      <div class="col px-md-5">
+        <div class="p-3 border bg-light">
+          <Login />
+        </div>
+      </div>
+    </div>
   );
 }
