@@ -1,11 +1,12 @@
 .video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
+  height: 100vh;
+  overflow: auto;
 }
 
-.video-grid .react-player {
-  width: 100% !important;
-  height: auto !important;
+.video-grid .react-rnd {
+  position: absolute;
 }

@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import ReactPlayer from "react-player/lazy";
 import Select from "react-select";
+import { Rnd } from "react-rnd";
 import "./AuthComponent.css";
 
 const sampleVideos = [
@@ -133,7 +134,20 @@ function AuthComponent() {
 
         <div className="video-grid">
           {filteredVideos.slice(0, videoCount).map((video, index) => (
-            <ReactPlayer key={`${index}-${video.url}`} playing controls muted url={video.url} />
+            <Rnd
+              key={`${index}-${video.url}`}
+              default={{
+                x: 0,
+                y: 0,
+                width: 320,
+                height: 180,
+              }}
+              minWidth={160}
+              minHeight={90}
+              bounds="parent"
+            >
+              <ReactPlayer playing controls muted url={video.url} width="100%" height="100%" />
+            </Rnd>
           ))}
         </div>
       </div>
