@@ -6,10 +6,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./db/userModel");
 const auth = require("./auth");
-const xvideos = require('xvideosx');
-
+const xvideos = require("xvideosx");
 
 dbConnect();
+
+function getRandomNumber() {
+  return Math.floor(Math.random() * 20) + 1;
+}
 
 // Curb Cores Error by adding a header here
 app.use((req, res, next) => {
@@ -93,7 +96,7 @@ app.post("/login", (request, response) => {
             message: "Login Successful",
             email: user.email,
             token,
-          }); 
+          });
         })
         .catch((error) => {
           response.status(400).send({
@@ -115,45 +118,50 @@ app.get("/home-endpoint", (request, response) => {
 });
 
 app.get("/get-video-url", auth, async (request, response) => {
-
   const videoUrls = [];
   const page = request.query.page;
   const videopath = request.query.path;
 
   const fresh = await xvideos.videos.fresh({ page: page });
   for await (const v of fresh.videos) {
-    if(v.path == videopath) {
-      let videodetail = await xvideos.videos.details({url: v.url}).then(video => {
+    if (v.path == videopath) {
+      let videodetail = await xvideos.videos
+        .details({ url: v.url })
+        .then((video) => {
           videoUrls.push(video.files.high);
-      });
+        });
     }
-  };
+  }
 
+  console.log(videoUrls.length);
   response.json(videoUrls);
 });
 
 app.get("/get-videos", auth, async (request, response) => {
-
   const videoUrls = [];
   const filter = request.query.filter;
+  const page = getRandomNumber();
 
-  for (let i = 1; i < 10; i++) {
-    const freshList = await xvideos.videos.fresh({ page: i });
-    for await (const v of freshList.videos) {
-      try{
+  const freshList = await xvideos.videos.fresh({ page: page });
 
-        videoUrls.push({page: i, path: v.path});
-      }
-      catch (err){
-        console.log(err);
-      }
-    }
+  try {
+    await Promise.all(
+      freshList.videos.map(async (v) => {
+        let videodetail = await xvideos.videos
+          .details({ url: v.url })
+          .then((video) => {
+            videoUrls.push(video.files.high);
+          });
+      })
+    );
+    console.log("Page Number: " + page);
+    console.log("Total videos found: " + videoUrls.length);
+    response.json(videoUrls);
+  } catch (error) {
+    console.log("Error: " + error);
+  } finally {
+    response.json(videoUrls);
   }
-
-  console.log('Total videos found: ' + videoUrls.length)
-  response.json(videoUrls);
-  
 });
-
 
 module.exports = app;
