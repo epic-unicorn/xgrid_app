@@ -35,6 +35,7 @@ function AuthComponent() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [useSampleVideos, setUseSampleVideos] = useState(true);
   const [availableTags, setAvailableTags] = useState([]);
+  const [currentVideoIndexes, setCurrentVideoIndexes] = useState([]);
 
   useEffect(() => {
     if (!useSampleVideos) {
@@ -50,6 +51,7 @@ function AuthComponent() {
         .then((result) => {
           setVideos(result.data);
           extractTags(result.data);
+          initializeVideoIndexes(result.data.length);
         })
         .catch((error) => {
           error = new Error();
@@ -58,8 +60,9 @@ function AuthComponent() {
       // Use sample videos
       setVideos(sampleVideos);
       extractTags(sampleVideos);
+      initializeVideoIndexes(sampleVideos.length);
     }
-  }, [useSampleVideos]);
+  }, [useSampleVideos, videoCount]);
 
   // Extract unique tags from videos
   const extractTags = (videos) => {
@@ -72,6 +75,24 @@ function AuthComponent() {
     setAvailableTags([...tags].map(tag => ({ value: tag, label: tag })));
   };
 
+  // Initialize video indexes
+  const initializeVideoIndexes = (count) => {
+    const indexes = [];
+    for (let i = 0; i < count; i++) {
+      indexes.push(i % videos.length);
+    }
+    setCurrentVideoIndexes(indexes);
+  };
+
+  // Load next video
+  const loadNextVideo = (index) => {
+    setCurrentVideoIndexes(prevIndexes => {
+      const newIndexes = [...prevIndexes];
+      newIndexes[index] = (newIndexes[index] + 1) % videos.length;
+      return newIndexes;
+    });
+  };
+
   // logout
   function logout() {
     cookies.remove("TOKEN", { path: "/account" });
@@ -81,6 +102,7 @@ function AuthComponent() {
   // handle video count change
   function handleVideoCountChange(event) {
     setVideoCount(event.target.value);
+    initializeVideoIndexes(event.target.value);
   }
 
   // handle tag selection change
@@ -134,20 +156,34 @@ function AuthComponent() {
 
         <div className="video-grid">
           {filteredVideos.slice(0, videoCount).map((video, index) => (
-            <Rnd
-              key={`${index}-${video.url}`}
-              default={{
-                x: 0,
-                y: 0,
-                width: 320,
-                height: 180,
-              }}
-              minWidth={160}
-              minHeight={90}
-              bounds="parent"
-            >
-              <ReactPlayer playing controls muted url={video.url} width="100%" height="100%" />
-            </Rnd>
+            <div key={`${index}-${video.url}`} className="video-item">
+              <Rnd
+                default={{
+                  x: 0,
+                  y: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
+                minWidth={160}
+                minHeight={90}
+                bounds="parent"
+              >
+                {currentVideoIndexes[index] !== undefined && videos[currentVideoIndexes[index]] && (
+                  <ReactPlayer
+                    playing
+                    controls
+                    muted
+                    url={videos[currentVideoIndexes[index]].url}
+                    width="100%"
+                    height="100%"
+                    onEnded={() => loadNextVideo(index)}
+                  />
+                )}
+                <div className="overlay">
+                  <button onClick={() => loadNextVideo(index)}>Next Video</button>
+                </div>
+              </Rnd>
+            </div>
           ))}
         </div>
       </div>

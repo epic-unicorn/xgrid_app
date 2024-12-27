@@ -150,7 +150,7 @@ app.get("/get-videos", auth, async (request, response) => {
         let videodetail = await xvideos.videos
           .details({ url: v.url })
           .then((video) => {
-            videoUrls.push(video.files.high);
+            videoUrls.push({"url": video.files.high, "tags": ['apple', 'banana', 'orange']});
           });
       })
     );
@@ -159,8 +159,6 @@ app.get("/get-videos", auth, async (request, response) => {
     response.json(videoUrls);
   } catch (error) {
     console.log("Error: " + error);
-  } finally {
-    response.json(videoUrls);
   }
 });
 
