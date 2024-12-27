@@ -3,7 +3,8 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import ReactPlayer from "react-player/lazy";
 import Select from "react-select";
-import { Rnd } from "react-rnd";
+import GridLayout from "react-grid-layout";
+import "react-grid-layout/css/styles.css";
 import "./AuthComponent.css";
 
 const sampleVideos = [
@@ -36,6 +37,7 @@ function AuthComponent() {
   const [useSampleVideos, setUseSampleVideos] = useState(true);
   const [availableTags, setAvailableTags] = useState([]);
   const [currentVideoIndexes, setCurrentVideoIndexes] = useState([]);
+  const [layout, setLayout] = useState([]);
 
   useEffect(() => {
     if (!useSampleVideos) {
@@ -52,15 +54,17 @@ function AuthComponent() {
           setVideos(result.data);
           extractTags(result.data);
           initializeVideoIndexes(result.data.length);
+          initializeLayout(result.data.length);
         })
         .catch((error) => {
-          error = new Error();
+          console.error(error);
         });
     } else {
       // Use sample videos
       setVideos(sampleVideos);
       extractTags(sampleVideos);
       initializeVideoIndexes(sampleVideos.length);
+      initializeLayout(sampleVideos.length);
     }
   }, [useSampleVideos, videoCount]);
 
@@ -84,12 +88,41 @@ function AuthComponent() {
     setCurrentVideoIndexes(indexes);
   };
 
+  // Initialize layout
+  const initializeLayout = (count) => {
+    const newLayout = [];
+    for (let i = 0; i < count; i++) {
+      newLayout.push({ i: i.toString(), x: i % 4, y: Math.floor(i / 4), w: 1, h: 1 });
+    }
+    setLayout(newLayout);
+  };
+
   // Load next video
-  const loadNextVideo = (index) => {
+  const loadNextVideo = (index, event) => {
+    if (event) {
+      event.stopPropagation(); // Stop the event from propagating to the drag handler
+    }
     setCurrentVideoIndexes(prevIndexes => {
       const newIndexes = [...prevIndexes];
       newIndexes[index] = (newIndexes[index] + 1) % videos.length;
       return newIndexes;
+    });
+  };
+
+  // Remove video
+  const removeVideo = (index, event) => {
+    if (event) {
+      event.stopPropagation(); // Stop the event from propagating to the drag handler
+    }
+    setCurrentVideoIndexes(prevIndexes => {
+      const newIndexes = [...prevIndexes];
+      newIndexes.splice(index, 1);
+      return newIndexes;
+    });
+    setLayout(prevLayout => {
+      const newLayout = [...prevLayout];
+      newLayout.splice(index, 1);
+      return newLayout;
     });
   };
 
@@ -101,8 +134,10 @@ function AuthComponent() {
 
   // handle video count change
   function handleVideoCountChange(event) {
-    setVideoCount(event.target.value);
-    initializeVideoIndexes(event.target.value);
+    const count = parseInt(event.target.value, 10);
+    setVideoCount(count);
+    initializeVideoIndexes(count);
+    initializeLayout(count);
   }
 
   // handle tag selection change
@@ -154,38 +189,36 @@ function AuthComponent() {
           </button>
         </div>
 
-        <div className="video-grid">
+        <GridLayout
+          className="video-grid"
+          layout={layout}
+          cols={4}
+          rowHeight={window.innerHeight / 4}
+          width={window.innerWidth}
+          onLayoutChange={(newLayout) => setLayout(newLayout)}
+          draggableCancel=".overlay button"
+        >
           {filteredVideos.slice(0, videoCount).map((video, index) => (
-            <div key={`${index}-${video.url}`} className="video-item">
-              <Rnd
-                default={{
-                  x: 0,
-                  y: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-                minWidth={160}
-                minHeight={90}
-                bounds="parent"
-              >
-                {currentVideoIndexes[index] !== undefined && videos[currentVideoIndexes[index]] && (
-                  <ReactPlayer
-                    playing
-                    controls
-                    muted
-                    url={videos[currentVideoIndexes[index]].url}
-                    width="100%"
-                    height="100%"
-                    onEnded={() => loadNextVideo(index)}
-                  />
-                )}
-                <div className="overlay">
-                  <button onClick={() => loadNextVideo(index)}>Next Video</button>
-                </div>
-              </Rnd>
+            <div key={index} className="video-item" data-grid={layout[index]}>
+              {currentVideoIndexes[index] !== undefined && videos[currentVideoIndexes[index]] && (
+                <ReactPlayer
+                  className="react-player"
+                  playing
+                  controls
+                  muted
+                  url={videos[currentVideoIndexes[index]].url}
+                  width="100%"
+                  height="100%"
+                  onEnded={() => loadNextVideo(index)}
+                />
+              )}
+              <div className="overlay">
+                <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
+                <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
+              </div>
             </div>
           ))}
-        </div>
+        </GridLayout>
       </div>
     </>
   );
