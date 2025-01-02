@@ -104,7 +104,11 @@ function AuthComponent() {
     }
     setCurrentVideoIndexes(prevIndexes => {
       const newIndexes = [...prevIndexes];
-      newIndexes[index] = (newIndexes[index] + 1) % videos.length;
+      let nextIndex;
+      do {
+        nextIndex = Math.floor(Math.random() * videos.length);
+      } while (nextIndex === newIndexes[index]);
+      newIndexes[index] = nextIndex;
       return newIndexes;
     });
   };
@@ -192,8 +196,8 @@ function AuthComponent() {
         <GridLayout
           className="video-grid"
           layout={layout}
-          cols={4}
-          rowHeight={window.innerHeight / 4}
+          cols={Math.floor(window.innerWidth / 600)} // Dynamic number of columns
+          rowHeight={window.innerHeight / Math.floor(window.innerWidth / 400)}
           width={window.innerWidth}
           onLayoutChange={(newLayout) => setLayout(newLayout)}
           draggableCancel=".overlay button"
@@ -215,6 +219,7 @@ function AuthComponent() {
               <div className="overlay">
                 <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
                 <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
+                <button onClick={(event) => removeVideo(index, event)}>Toggle Volume</button>
               </div>
             </div>
           ))}
