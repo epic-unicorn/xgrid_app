@@ -8,24 +8,9 @@ import "react-grid-layout/css/styles.css";
 import "./AuthComponent.css";
 
 const sampleVideos = [
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['apple', 'kaas'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['peer', 'kaas'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['banaan', 'mango'] },
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['fruit', 'cheese'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['banana', 'apple'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['mango', 'pear'] },
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['orange', 'grape'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['kiwi', 'melon'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['berry', 'peach'] },
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['plum', 'nectarine'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['apricot', 'fig'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['date', 'pomegranate'] },
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['coconut', 'lime'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['lemon', 'papaya'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['guava', 'lychee'] },
-  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', tags: ['passionfruit', 'dragonfruit'] },
-  { url: 'https://www.w3schools.com/html/movie.mp4', tags: ['starfruit', 'durian'] },
-  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', tags: ['jackfruit', 'rambutan'] }
+  { url: 'https://www.w3schools.com/html/mov_bbb.mp4', data: { tags: ['apple', 'kaas'], title: 'title1', duration: '8min' } },
+  { url: 'https://www.w3schools.com/html/movie.mp4', data: { tags: ['apple', 'kaas'], title: 'title2', duration: '8.2min' } },
+  { url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
 ];
 
 function AuthComponent() {
@@ -43,12 +28,12 @@ function AuthComponent() {
     if (!useSampleVideos) {
       const configuration = {
         method: "get",
-        url: "http://localhost:3000/get-videos",
+        url: "http://localhost:3000/xnxx",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-  
+
       axios(configuration)
         .then((result) => {
           setVideos(result.data);
@@ -72,8 +57,8 @@ function AuthComponent() {
   const extractTags = (videos) => {
     const tags = new Set();
     videos.forEach(video => {
-      if (video.tags) {
-        video.tags.forEach(tag => tags.add(tag));
+      if (video.data.tags) {
+        video.data.tags.forEach(tag => tags.add(tag));
       }
     });
     setAvailableTags([...tags].map(tag => ({ value: tag, label: tag })));
@@ -104,11 +89,7 @@ function AuthComponent() {
     }
     setCurrentVideoIndexes(prevIndexes => {
       const newIndexes = [...prevIndexes];
-      let nextIndex;
-      do {
-        nextIndex = Math.floor(Math.random() * videos.length);
-      } while (nextIndex === newIndexes[index]);
-      newIndexes[index] = nextIndex;
+      newIndexes[index] = (newIndexes[index] + 1) % videos.length;
       return newIndexes;
     });
   };
@@ -151,7 +132,7 @@ function AuthComponent() {
 
   // filter videos by selected tags
   const filteredVideos = videos.filter(video => {
-    return selectedTags.every(tag => video.tags && video.tags.includes(tag));
+    return selectedTags.every(tag => video.data.tags && video.data.tags.includes(tag));
   });
 
   return (
@@ -196,8 +177,8 @@ function AuthComponent() {
         <GridLayout
           className="video-grid"
           layout={layout}
-          cols={Math.floor(window.innerWidth / 600)} // Dynamic number of columns
-          rowHeight={window.innerHeight / Math.floor(window.innerWidth / 400)}
+          cols={4}
+          rowHeight={window.innerHeight / 4}
           width={window.innerWidth}
           onLayoutChange={(newLayout) => setLayout(newLayout)}
           draggableCancel=".overlay button"
@@ -205,21 +186,26 @@ function AuthComponent() {
           {filteredVideos.slice(0, videoCount).map((video, index) => (
             <div key={index} className="video-item" data-grid={layout[index]}>
               {currentVideoIndexes[index] !== undefined && videos[currentVideoIndexes[index]] && (
-                <ReactPlayer
-                  className="react-player"
-                  playing
-                  controls
-                  muted
-                  url={videos[currentVideoIndexes[index]].url}
-                  width="100%"
-                  height="100%"
-                  onEnded={() => loadNextVideo(index)}
-                />
+                <>
+                  <div className="video-header">
+                    <h3>{videos[currentVideoIndexes[index]].data.title}</h3>
+                    <p>{videos[currentVideoIndexes[index]].data.duration}</p>
+                  </div>
+                  <ReactPlayer
+                    className="react-player"
+                    playing
+                    controls
+                    muted
+                    url={videos[currentVideoIndexes[index]].url}
+                    width="100%"
+                    height="100%"
+                    onEnded={() => loadNextVideo(index)}
+                  />
+                </>
               )}
               <div className="overlay">
                 <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
                 <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
-                <button onClick={(event) => removeVideo(index, event)}>Toggle Volume</button>
               </div>
             </div>
           ))}

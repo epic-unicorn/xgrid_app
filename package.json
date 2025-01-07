@@ -16,6 +16,7 @@
     "jsonwebtoken": "^9.0.2",
     "kyouka-api": "^1.3.5",
     "mongoose": "^8.6.1",
+    "xnxx-scraper": "^1.0.4",
     "xvideosx": "^1.6.4"
   },
   "devDependencies": {

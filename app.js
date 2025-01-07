@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const User = require("./db/userModel");
 const auth = require("./auth");
 const xvideos = require("xvideosx");
+const xnxx = require('xnxx-scraper');
 
 dbConnect();
 
@@ -117,25 +118,38 @@ app.get("/home-endpoint", (request, response) => {
   response.json({ message: "Home!" });
 });
 
-app.get("/get-video-url", auth, async (request, response) => {
+app.get("/xnxx", auth, async (request, response) => {
   const videoUrls = [];
-  const page = request.query.page;
-  const videopath = request.query.path;
+  const filter = request.query.filter || 'new';
 
-  const fresh = await xvideos.videos.fresh({ page: page });
-  for await (const v of fresh.videos) {
-    if (v.path == videopath) {
-      let videodetail = await xvideos.videos
-        .details({ url: v.url })
-        .then((video) => {
-          videoUrls.push(video.files.high);
-        });
-    }
+  let test = await xnxx.search(filter);
+
+  try {
+    await Promise.all(
+      test.result.map(async (v) => {
+        let info = await xnxx
+          .info( v.link)
+          .then((video) => {
+            
+            const videoData = {
+              tags: video.result.tags.split(',').map(tag => tag.trim()),
+              title: video.result.title,
+              duration: video.result.duration
+            };
+
+            videoUrls.push({"url": video.result.files.high, "data": videoData});
+          });
+      })
+    );
+    
+    response.json(videoUrls);
+  } catch (error) {
+    console.log("Error: " + error);
+    response.json("");
   }
 
-  console.log(videoUrls.length);
-  response.json(videoUrls);
 });
+
 
 app.get("/get-videos", auth, async (request, response) => {
   const videoUrls = [];
@@ -148,12 +162,20 @@ app.get("/get-videos", auth, async (request, response) => {
     await Promise.all(
       freshList.videos.map(async (v) => {
         let videodetail = await xvideos.videos
-          .details({ url: v.url })
+          .details({ url: v.url , k: 'lesbian'})
           .then((video) => {
-            videoUrls.push({"url": video.files.high, "tags": ['apple', 'banana', 'orange']});
+
+            const videoData = {
+              tags: ['apple', 'banana', 'orange'],
+              title: video.title,
+              duration: video.duration
+            };
+
+            videoUrls.push({"url": video.files.high, "data": videoData});
           });
       })
-    );
+    );    
+
     console.log("Page Number: " + page);
     console.log("Total videos found: " + videoUrls.length);
     response.json(videoUrls);
