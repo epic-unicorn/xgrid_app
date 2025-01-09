@@ -180,28 +180,19 @@ function AuthComponent() {
               {filteredVideos[videoIndex] && (
                 <>
                   <div className="video-header">
-                    <div>{filteredVideos[videoIndex].data.title}</div>
-                    <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
-                    <p>Tags: {filteredVideos[videoIndex].data.tags.join(', ')}</p>
-                    <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
+                    <div className="video-info">
+                      <div>Title: {filteredVideos[videoIndex].data.title}</div>
+                      <div>Tags: {filteredVideos[videoIndex].data.tags.join(', ')}</div>
+                    </div>
+                    <div className="video-buttons">
+                      <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
+                      <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
+                    </div>
                   </div>
 
                   <div className="video-container">
-                  <video
 
-                      className="video-player"
-                      autoPlay  
-                      controls                    
-                      muted
-                      source={filteredVideos[videoIndex].url}
-                      onEnded={() => loadNextVideo(index)}                                  
-                    
-                    style={{ height: "100%", width: "100%", objectFit: "cover" }} //object-fit:cover
-                  >
-                    <source src={filteredVideos[videoIndex].url} type="video/mp4" />
-                  </video>
-
-                    {/* <ReactPlayer
+                    <ReactPlayer
                       className="react-player"
                       playing
                       controls
@@ -210,7 +201,7 @@ function AuthComponent() {
                       width="100%"
                       height="100%"
                       onEnded={() => loadNextVideo(index)}
-                    /> */}
+                    />
                   </div>                  
                 </>
               )}
