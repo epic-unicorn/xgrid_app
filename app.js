@@ -93,6 +93,7 @@ app.post("/login", (request, response) => {
             { expiresIn: "24h" }
           );
 
+          console.log("User Id: " + user._id + " successfully logged in");
           response.status(200).send({
             message: "Login Successful",
             email: user.email,
@@ -122,25 +123,30 @@ app.get("/xnxx", auth, async (request, response) => {
   const videoUrls = [];
   const filter = request.query.filter || 'new';
 
-  let test = await xnxx.search(filter);
-
+  console.log("Filter: " + filter);
+  let test = await xnxx.search({filter});
   try {
     await Promise.all(
-      test.result.map(async (v) => {
-        let info = await xnxx
-          .info( v.link)
+      
+      test.result.map(async (v) => {      
+        await xnxx
+          .info(v.link)
           .then((video) => {
             
-            const videoData = {
-              tags: video.result.tags.split(',').map(tag => tag.trim()),
-              title: video.result.title,
-              duration: video.result.duration
-            };
+            if (video && video.result) {
+              const videoData = {
+                tags: video.result.tags.split(',').map(tag => tag.trim()),
+                title: video.result.title,
+                duration: video.result.duration
+              };
 
-            videoUrls.push({"url": video.result.files.high, "data": videoData});
+              videoUrls.push({ "url": video.result.files.high, "data": videoData });
+            }
           });
       })
     );
+
+    console.log("Total videos found: " + videoUrls.length);
     
     response.json(videoUrls);
   } catch (error) {
