@@ -16,7 +16,7 @@ function App() {
         </div>
       </div>
 
-      <div class="row mx-md-n5 mt-5">
+      <div class="row mx-md-n5">
       <Switch>
         <Route exact path="/" component={HomeComponent} />
         <Route exact path="/account" component={Account} />

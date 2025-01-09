@@ -8,16 +8,16 @@ import "react-grid-layout/css/styles.css";
 import "./AuthComponent.css";
 
 const sampleVideos = [
-  { url: 'https://www.pexels.com/download/video/28878958/', data: { tags: ['apple', 'kaas'], title: 'title1', duration: '8min' } },
-  { url: 'https://www.pexels.com/download/video/30014322/', data: { tags: ['apple', 'kaas'], title: 'title2', duration: '8.2min' } },
-  { url: 'https://www.pexels.com/download/video/29304849/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/29967249/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/5150392/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
-  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['apple', 'kaas'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/28878958/', data: { tags: ['apple', 'kaas'], title: 'asdfkjlasdkfja sdlfkas dfl aksjdlf kasjdf asdlfj asdlkjf lassdaf sdaf sda fdsa sadfasdfasdfasdfsaddkjl', duration: '8min' } },
+  { url: 'https://www.pexels.com/download/video/30014322/', data: { tags: ['banaan', 'apple'], title: 'title2', duration: '8.2min' } },
+  { url: 'https://www.pexels.com/download/video/29304849/', data: { tags: ['apple', 'meloen'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/29967249/', data: { tags: ['tomaat', 'kaas'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/5150392/', data: { tags: ['apple', 'komkommer'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['1', '2'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['3', '4'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['d', 'a'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['A', 'a'], title: 'title3', duration: '10min' } },
+  { url: 'https://www.pexels.com/download/video/30043379/', data: { tags: ['d', 'B'], title: 'title3', duration: '10min' } },
 ];
 
 function AuthComponent() {
@@ -41,11 +41,10 @@ function AuthComponent() {
   }, [useSampleVideos]);
 
   useEffect(() => {
-    extractTags(filteredVideos);
-  }, [videos, selectedTags, searchTerm]);
+    extractTags(videos);
+  }, [videos]);
 
   const fetchVideos = () => {
-    if(!useSampleVideos){
     const configuration = {
       method: "get",
       url: `http://localhost:3000/xnxx?filter=${searchTerm}`,
@@ -61,7 +60,6 @@ function AuthComponent() {
       .catch((error) => {
         console.error(error);
       });
-    }
   };
 
   // Extract unique tags from videos
@@ -69,10 +67,10 @@ function AuthComponent() {
     const tags = new Set();
     videos.forEach(video => {
       if (video.data.tags) {
-        video.data.tags.forEach(tag => tags.add(tag));
+        video.data.tags.forEach(tag => tags.add(tag.toLowerCase()));
       }
     });
-    setAvailableTags([...tags].map(tag => ({ value: tag, label: tag })));
+    setAvailableTags(Array.from(tags).map(tag => ({ value: tag, label: tag })));
   };
 
   // Add new video
@@ -136,11 +134,7 @@ function AuthComponent() {
   return (
     <>
       <header className="header-bar">
-        <button type="button" className="btn btn-danger" onClick={() => logout()}>
-          Logout
-        </button>
-
-        <div>Videos {videos.length}</div>
+        
         <button type="button" onClick={() => setUseSampleVideos(!useSampleVideos)}>
             {useSampleVideos ? 'Show Actual Videos' : 'Show Sample Videos'}
         </button>
@@ -155,22 +149,23 @@ function AuthComponent() {
           />
           <button type="submit">Search</button>
         </form>
-        
-        <label htmlFor="tagSelection">Filter by tags: </label>
-        <Select
-          id="tagSelection"
-          isMulti
-          options={availableTags}
-          onChange={handleTagSelectionChange}
-        />
-      
+
+        <div>          
+          <Select
+            id="tagSelection"
+            isMulti
+            options={availableTags}
+            onChange={handleTagSelectionChange}
+          />
+        </div>
+
         <div>
           <button type="button" onClick={addNewVideo}>Add New Video</button>
           <button type="button" onClick={fetchVideos}>Refresh Video List</button>
         </div>
       </header>
 
-      <div className="container-fluid h-10">
+      
         <GridLayout
           className="video-grid"
           layout={layout}
@@ -182,33 +177,33 @@ function AuthComponent() {
         >
           {currentVideoIndexes.map((videoIndex, index) => (
             <div key={index} className="video-item" data-grid={layout[index]}>
-              {videos[videoIndex] && (
+              {filteredVideos[videoIndex] && (
                 <>
                   <div className="video-header">
-                    <p>{videos[videoIndex].data.title} {videos[videoIndex].data.duration}</p>
+                    <div>{filteredVideos[videoIndex].data.title}</div>
+                    <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
                   </div>
+
                   <div className="video-container">
                     <ReactPlayer
                       className="react-player"
                       playing
                       controls
                       muted
-                      url={videos[videoIndex].url}
+                      url={filteredVideos[videoIndex].url}
                       width="100%"
                       height="100%"
                       onEnded={() => loadNextVideo(index)}
                     />
                   </div>
-                  <div className="button-bar">
-                    <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
-                    <button onClick={(event) => removeVideo(index, event)}>Remove Video</button>
-                  </div>
+                  <p>Tags: {filteredVideos[videoIndex].data.tags.join(', ')}</p>
+                  <button onClick={(event) => loadNextVideo(index, event)}>Next Video</button>
                 </>
               )}
             </div>
           ))}
         </GridLayout>
-      </div>
+      
     </>
   );
 }

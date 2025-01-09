@@ -4,7 +4,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 10px;
-  margin-left: 10px;
+  margin-right: 10px;
   background-color: #f8f9fa;
 }
 
@@ -39,14 +39,19 @@
   width: 100%;
   height: 100%;
   display: flex;
+  border: grey 1px solid;
   flex-direction: column;
 }
 
 .video-header {
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
+  text-align: left;
   padding: 10px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.video-header div {
+  padding: 2px;
 }
 
 .video-container {
@@ -60,21 +65,4 @@
   left: 0;
   width: 100% !important;
   height: 100% !important;
-}
-
-.button-bar {
-  background: rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-}
-
-.button-bar button {
-  padding: 10px 20px;
-  font-size: 16px;
-  color: white;
-  background-color: red;
-  border: none;
-  cursor: pointer;
-  margin: 0 5px;
 }
