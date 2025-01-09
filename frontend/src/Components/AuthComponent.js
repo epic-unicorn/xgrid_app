@@ -45,6 +45,7 @@ function AuthComponent() {
   }, [videos, selectedTags, searchTerm]);
 
   const fetchVideos = () => {
+    if(!useSampleVideos){
     const configuration = {
       method: "get",
       url: `http://localhost:3000/xnxx?filter=${searchTerm}`,
@@ -60,6 +61,7 @@ function AuthComponent() {
       .catch((error) => {
         console.error(error);
       });
+    }
   };
 
   // Extract unique tags from videos
@@ -138,7 +140,7 @@ function AuthComponent() {
           Logout
         </button>
 
-        <p>Videos {videos.length}</p>
+        <div>Videos {videos.length}</div>
         <button type="button" onClick={() => setUseSampleVideos(!useSampleVideos)}>
             {useSampleVideos ? 'Show Actual Videos' : 'Show Sample Videos'}
         </button>
@@ -153,17 +155,15 @@ function AuthComponent() {
           />
           <button type="submit">Search</button>
         </form>
-
         
-          <label htmlFor="tagSelection">Filter by tags: </label>
-          <Select
-            id="tagSelection"
-            isMulti
-            options={availableTags}
-            onChange={handleTagSelectionChange}
-          />
-        
-
+        <label htmlFor="tagSelection">Filter by tags: </label>
+        <Select
+          id="tagSelection"
+          isMulti
+          options={availableTags}
+          onChange={handleTagSelectionChange}
+        />
+      
         <div>
           <button type="button" onClick={addNewVideo}>Add New Video</button>
           <button type="button" onClick={fetchVideos}>Refresh Video List</button>

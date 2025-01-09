@@ -4,6 +4,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 10px;
+  margin-left: 10px;
   background-color: #f8f9fa;
 }
 
@@ -42,7 +43,7 @@
 }
 
 .video-header {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.2);
   color: white;
   padding: 10px;
   text-align: center;
@@ -62,7 +63,7 @@
 }
 
 .button-bar {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   padding: 10px;
